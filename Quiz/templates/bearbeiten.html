@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Spieler bearbeiten</title>
+</head>
+<body>
+    <h1>Spieler bearbeiten</h1>
+    {% if erfolg %}
+        <p style="color: green;">{{ erfolg }}</p>
+    {% endif %}
+    <form action="/bearbeiten/{{ spieler.id }}" method="post">
+        <label for="username">Name:</label>
+        <input type="text" id="username" name="username" value="{{ spieler.name }}" required>
+        <br>
+        <label for="email">E-Mail-Adresse:</label>
+        <input type="email" id="email" name="email" value="{{ spieler.email }}" required>
+        <br>
+        <br>
+        <input type="submit" value="Speichern">
+    </form>
+</body>
+</html>

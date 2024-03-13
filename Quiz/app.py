@@ -67,5 +67,59 @@ def register():
         msg = 'Please fill out the form !'
     return render_template('register.html', msg = msg)
 
+@app.route("/anzeigen")
+def anzeigen():
+    # Daten aus der Datenbank lesen
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT `id`, `frage`, `antwort1`, `antwort2`, `antwort3`, `antwort4`, `Korrekte_antwort`, `kategorie_id` FROM `fragen` WHERE 1;")
+    fragen = cur.fetchall()
+    cur.close()
+    print(fragen)
+    # Daten an die Vorlage übergeben
+    return render_template("anzeigen.html", fragen=fragen)
+
+
+@app.route("/bearbeiten_fragen")
+def bearbeiten_fragen():
+    fragen_liste = []
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM fragen")
+    for row in cursor:
+        frage_dict = dict(zip([col[0] for col in cursor.description], row))
+        fragen_liste.append(frage_dict)
+    cursor.close()
+    return render_template("bearbeiten_fragen.html", fragen_liste=fragen_liste)
+
+@app.route("/bearbeiten_fragen/<int:id>", methods=['GET', 'POST'])
+def bearbeiten_fragen_id(id):
+    if request.method == 'GET':
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT * FROM fragen WHERE id = %s", (id,))
+        frage = cursor.fetchone()
+        cursor.close()
+        print(frage)
+        return render_template("bearbeiten_fragen_id.html", frage=frage)
+    elif request.method == 'POST':
+        frage = request.form['frage']
+        antwort1 = request.form['antwort1']
+        antwort2 = request.form['antwort2']
+        antwort3 = request.form['antwort3']
+        antwort4 = request.form['antwort4']
+        korrekte_antwort = request.form['korrekte_antwort']
+        kategorie_id = request.form['kategorie_id']
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            UPDATE fragen
+            SET frage = %s, antwort1 = %s, antwort2 = %s, antwort3 = %s,
+            antwort4 = %s, korrekte_antwort = %s, kategorie_id = %s
+            WHERE id = %s
+            """, (frage, antwort1, antwort2, antwort3, antwort4, korrekte_antwort, kategorie_id, id))
+        cursor.connection.commit()
+        cursor.close()
+        return redirect(url_for("bearbeiten_fragen"))
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

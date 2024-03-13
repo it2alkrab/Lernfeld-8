@@ -1,0 +1,27 @@
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Frage</th>
+      <th>Antworten</th>
+      <th>Korrekte Antwort</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for frage in fragen_liste %}
+      <tr>
+        <td>{{ frage['id'] }}</td>  
+        <td>
+          <a href="{{ url_for('bearbeiten_fragen_id', id=frage['id']) }}">{{ frage['frage'] }}</a>
+        </td>
+        <td>
+          {{ frage['antwort1'] }}<br>
+          {{ frage['antwort2'] }}<br>
+          {{ frage['antwort3'] }}<br>
+          {{ frage['antwort4'] }}
+        </td>
+        <td>{{ frage['korrekte_antwort'] }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

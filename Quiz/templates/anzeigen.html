@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Spieler anzeigen</title>
+</head>
+<body>
+    <h1>Spieler</h1>
+    {% if fragen %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Frage</th>
+                    <th>Antwort1</th>
+                    <th>Antwort2</th>
+                    <th>Antwort3</th>
+                    <th>Antwort4</th>
+                    <th>Korrekte antwort</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for frage in fragen %}
+                    <tr>
+                        <td>{{ frage[0]}}</td>  
+                        <td>{{ frage[1] }}</td>
+                        <td>{{ frage[2] }}</td>
+                        <td>{{ frage[3] }}</td>
+                        <td>{{ frage[4] }}</td>
+                        <td>{{ frage[5] }}</td>
+                        <td>{{ frage[6] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Keine Fragen gefunden.</p>
+    {% endif %}
+</body>
+</html>

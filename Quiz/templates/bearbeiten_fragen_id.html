@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Frage bearbeiten</title>
+</head>
+<body>
+    <h1>Frage bearbeiten</h1>
+    <form action="{{ url_for('bearbeiten_fragen_id', id=frage[0]) }}" method="post">
+        <label for="frage">Frage:</label>
+        <input type="text" name="frage" id="frage" value="{{ frage[1] }}">
+        <br>
+        <label for="antwort1">Antwort 1:</label>
+        <input type="text" name="antwort1" id="antwort1" value="{{ frage[2] }}">
+        <br>
+        <label for="antwort2">Antwort 2:</label>
+        <input type="text" name="antwort2" id="antwort2" value="{{ frage[3]}}">
+        <br>
+        <label for="antwort3">Antwort 3:</label>
+        <input type="text" name="antwort3" id="antwort3" value="{{ frage[4] }}">
+        <br>
+        <label for="antwort4">Antwort 4:</label>
+        <input type="text" name="antwort4" id="antwort4" value="{{ frage[5] }}">
+        <br>
+        <label for="korrekte_antwort">Korrekte Antwort:</label>
+        <select name="korrekte_antwort" id="korrekte_antwort">
+            <option value="1">Antwort 1</option>
+            <option value="2">Antwort 2</option>
+            <option value="3">Antwort 3</option>
+            <option value="4">Antwort 4</option>
+        </select>
+        <br>
+        <label for="kategorie_id">Kategorie:</label>
+        <select name="kategorie_id" id="kategorie_id">
+            {% for i in frage %}
+            <option >{{ i[6]}}</option>
+            {% endfor %}
+                    </select>
+        <br>
+        <input type="submit" value="Speichern">
+    </form>
+</body>
+</html>
