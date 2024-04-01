@@ -15,6 +15,13 @@ mysql = MySQL(app)
 
 
 @app.route('/')
+def index():
+    if 'loggedin' in session and session['loggedin'] == True:
+        return render_template('home.html')
+    else:
+        return redirect(url_for('login'))
+
+
 @app.route('/login', methods =['GET', 'POST'])
 def login():
     msg = ''
@@ -29,7 +36,7 @@ def login():
             session['id'] = account['id']
             session['username'] = account['username']
             msg = 'Logged in successfully !'
-            return render_template('index.html', msg = msg)
+            return render_template('home.html', msg = msg)
         else:
             msg = 'Incorrect username / password !'
     return render_template('login.html', msg = msg)
@@ -69,14 +76,100 @@ def register():
 
 @app.route("/anzeigen")
 def anzeigen():
-    # Daten aus der Datenbank lesen
+    # Kategorien auslesen
     cur = mysql.connection.cursor()
-    cur.execute("SELECT `id`, `frage`, `antwort1`, `antwort2`, `antwort3`, `antwort4`, `Korrekte_antwort`, `kategorie_id` FROM `fragen` WHERE 1;")
+    cur.execute("SELECT * FROM kategorien")
+    kategorien = cur.fetchall()
+    cur.close()
+
+    # Frage auswählen abhängig von der Kategorie (optional)
+    selected_category = request.args.get('kategorie_id')
+
+    if selected_category:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM fragen WHERE kategorie_id = %s", (selected_category,))
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM fragen")
+
     fragen = cur.fetchall()
     cur.close()
-    print(fragen)
-    # Daten an die Vorlage übergeben
-    return render_template("anzeigen.html", fragen=fragen)
+
+    return render_template("anzeigen.html", kategorien=kategorien, fragen=fragen)
+
+@app.route("/kategorien")
+def kategorien():
+  kategorien = []
+  cursor = mysql.connection.cursor()
+  cursor.execute("SELECT * FROM kategorien")
+  for row in cursor:
+    kategorie_dict = dict(zip([col[0] for col in cursor.description], row))
+    kategorien.append(kategorie_dict)
+  cursor.close()
+  return render_template("kategorie_auswählen.html", kategorien=kategorien)
+
+@app.route("/spielen", methods=["GET", "POST"])
+def spielen():
+  if request.method == "GET":
+    return render_template("kategorie_auswählen.html")
+  elif request.method == "POST":
+    kategorie_id = request.form.get("kategorie_id")
+
+    # Validierung der Kategorie-ID
+    if not kategorie_id or not kategorie_id.isdigit():
+      return render_template("fehlermeldung.html", 
+                            meldung="Ungültige Kategorie-ID")
+
+    # Zufällige Frage aus der gewählten Kategorie laden
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM fragen WHERE kategorie_id = %s ORDER BY RAND() LIMIT 1", (kategorie_id,))
+    frage = cursor.fetchone()
+    cursor.close()
+
+    if not frage:
+      # Fehlermeldung anzeigen, falls keine Fragen vorhanden
+      return render_template("keine_fragen.html")
+
+    return render_template("spielen.html", frage=frage)
+
+@app.route("/auswertung", methods=["POST"])
+def auswertung():
+    # Ausgewählte Antwort auswerten
+    antwort_id = request.form.get("antwort_id")
+
+    # Korrekte Antwort aus der Datenbank laden
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT korrekte_antwort FROM fragen WHERE id = %s", (antwort_id,))
+    richtige_antwort = cursor.fetchone()
+    cursor.close()
+
+    # Ergebnis ermitteln
+    richtig_falsch = "richtig" if antwort_id == richtige_antwort else "falsch"
+
+    # Nächste Frage laden
+    kategorie_id = request.form.get("kategorie_id")
+    fragen = []
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM fragen WHERE kategorie_id = %s ORDER BY RAND() LIMIT 1", (kategorie_id,))
+    frage = cursor.fetchone()
+    cursor.close()
+
+    if not frage:
+        # Fehlermeldung anzeigen, falls keine Fragen vorhanden
+        return render_template("keine_fragen.html")
+
+    # Punkte des Benutzers berechnen (optional)
+    # ... Code zur Punkteberechnung ...
+
+    # Ergebnis an die Vorlage übergeben
+    return render_template("ergebnis.html", 
+                          richtig_falsch=richtig_falsch, 
+                          richtige_antwort=richtige_antwort, 
+                          frage=frage, 
+                          punkte=punkte) # Punkte-Variable hinzufügen (optional)
+
+
+
 
 
 @app.route("/bearbeiten_fragen")

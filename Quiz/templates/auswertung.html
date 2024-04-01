@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Auswertung</title>
+</head>
+<body>
+    {% if antwort_id == richtige_antwort_id %}
+    <p>Deine Antwort war richtig!</p>
+{% else %}
+    <p>Deine Antwort war leider falsch.</p>
+    <p>Die richtige Antwort war: {{ richtige_antwort }}</p>
+{% endif %}
+
+</body>
+</html>

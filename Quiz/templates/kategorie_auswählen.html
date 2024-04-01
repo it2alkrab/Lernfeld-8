@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Kategorie auswählen</title>
+</head>
+<body>
+  <h1>Wähle eine Kategorie aus, um das Spiel zu starten:</h1>
+  <form action="/spielen" method="post">
+    <select name="kategorie_id">
+      {% for kategorie in kategorien %}
+      <option value="{{ kategorie.id }}">{{ kategorie.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Spielen">
+  </form>
+</body>
+</html>

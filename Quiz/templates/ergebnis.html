@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Ergebnis</title>
+</head>
+<body>
+  <h1>Dein Ergebnis</h1>
+  <p>Deine Antwort war {{ richtig_falsch }}.</p>
+  <p>Die richtige Antwort war: {{ richtige_antwort }}</p>
+
+  {% if frage %}
+  <h2>Nächste Frage</h2>
+  <p>{{ frage.frage }}</p>
+
+  <form action="/auswertung" method="post">
+    <input type="hidden" name="kategorie_id" value="{{ frage.kategorie_id }}">
+    {% for antwort in frage.antworten %}
+    <label for="{{ antwort.id }}">{{ antwort.antwort }}</label>
+    <input type="radio" name="antwort_id" id="{{ antwort.id }}" value="{{ antwort.id }}">
+    {% endfor %}
+    <br>
+    <input type="submit" value="Weiter">
+  </form>
+  {% else %}
+  <p>Keine weiteren Fragen in dieser Kategorie.</p>
+  <a href="/kategorien">Wähle eine andere Kategorie aus</a>
+  {% endif %}
+
+  {% if punkte %}
+  <h2>Punkte</h2>
+  <p>Du hast bisher {{ punkte }} Punkte erreicht.</p>
+  {% endif %}
+</body>
+</html>
