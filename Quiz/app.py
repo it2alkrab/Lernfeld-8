@@ -1,5 +1,5 @@
 from flask_mysqldb import MySQL
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session , craete_app
 import MySQLdb.cursors
 import re
 app = Flask(__name__)
@@ -281,10 +281,6 @@ def rangliste():
   cursor.close()
 
   return render_template("rangliste.html", rangliste=rangliste)
-
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
