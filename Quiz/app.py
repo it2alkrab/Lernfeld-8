@@ -1,5 +1,5 @@
 from flask_mysqldb import MySQL
-from flask import Flask, render_template, request, redirect, url_for, session , craete_app
+from flask import Flask, render_template, request, redirect, url_for, session
 import MySQLdb.cursors
 import re
 app = Flask(__name__)
@@ -12,7 +12,7 @@ app.config['MYSQL_PASSWORD'] = ""
 app.config['MYSQL_DB'] = "quiz"
 
 mysql = MySQL(app)
-
+app.config['TESTING'] = True
 
 @app.route('/')
 def index():
@@ -284,3 +284,5 @@ def rangliste():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+app.testing = True

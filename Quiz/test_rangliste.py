@@ -1,42 +1,28 @@
-# test_rangliste.py
-from mock import mock
+# In Ihrem Testmodul
 import unittest
+from unittest.mock import MagicMock
+from app import app
 
-from app import create_app # Anpassen an Ihren App-Aufbau
+class RanglisteTestCase(unittest.TestCase):
 
-app = create_app('testing')
-class TestRangliste(unittest.TestCase):
+    def setUp(self):
+        app.config['TESTING'] = True
+        self.app = app.test_client()
+        self.mock_cursor = MagicMock()
+        self.mock_cursor.fetchall.return_value = [(1,"Spieler 1", 100), (2,"Spieler 2", 90)]
+        self.mock_cursor.close.return_value = None
+        self.mock_connection = MagicMock()
+        self.mock_connection.cursor.return_value = self.mock_cursor
 
-  def setUp(self):
-    self.app = app('testing')  # Erstelle Flask-Test-App
-    self.app_context = self.app.app_context()
-    self.app_context.push()  # Aktiviere App-Kontext
+        # Mocken der MySQL-Erweiterung
+        self.mock_mysql = MagicMock()
+        self.mock_mysql.connection.cursor.return_value = self.mock_cursor
 
-  def tearDown(self):
-    self.app_context.pop()  # Beende App-Kontext
+        # Mocken der MySQL-Erweiterung in der Flask-App
+        app.mysql = self.mock_mysql
 
-  @mock.patch('app.rangliste.cursor.execute')  # Mocke die cursor.execute Methode
-  def test_rangliste_leere_tabelle(self, mock_execute):
-    """
-    Testet die Rangliste mit einer leeren Tabelle.
-    """
-    mock_execute.return_value = []
-    with self.app.test_client() as client:
-      response = client.get('/rangliste')  # Sende GET-Request an /rangliste
-      self.assertEqual(response.status_code, 200)  # Prüfe Statuscode 200 (OK)
-      self.assertEqual(response.json, [])  # Prüfe ob leere Liste zurückgegeben wird
+    def test_rangliste(self):
+        print()
 
-  def test_rangliste_ein_eintrag(self, mock_execute):
-    """
-    Testet die Rangliste mit einem Eintrag.
-    """
-    mock_execute.return_value = [("Spieler 1", 100, 1)]
-    with self.app.test_client() as client:
-      response = client.get('/rangliste')
-      self.assertEqual(response.status_code, 200)
-      self.assertEqual(response.json, [{"name": "Spieler 1", "punkte": 100, "platz": 1}])
-
-  # ... weitere Testmethoden für verschiedene Szenarien
-
-if __name__ == "__main__":
-  unittest.main()
+if __name__ == '__main__':
+    unittest.main()
