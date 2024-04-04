@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Rangliste</title>
+</head>
+<body>
+  <h1>Rangliste</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Platz</th>
+        <th>Name</th>
+        <th>Punkte</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for eintrag in rangliste %}
+      <tr>
+        <td>{{ eintrag[2] }}</td>
+        <td>{{ eintrag[0] }}</td>
+        <td>{{ eintrag[1] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

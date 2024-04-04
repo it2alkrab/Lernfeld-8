@@ -9,10 +9,10 @@
     <p>Kategorie: {{ kategorie_name  }}</p>
     <p>Frage: {{ frage[1] }}</p>
     <form action="/auswertung" method="post">
-        <input type="radio" name="antwort_id" value="{{ frage.antwort1_id }}"> {{ frage[2] }}
-        <input type="radio" name="antwort_id" value="{{ frage.antwort2_id }}"> {{ frage[3] }}
-        <input type="radio" name="antwort_id" value="{{ frage.antwort3_id }}"> {{ frage[4] }}
-        <input type="radio" name="antwort_id" value="{{ frage.antwort4_id }}"> {{ frage[5] }}
+        <input type="radio" name="antwort_id" value="{{ frage[2] }}"> {{ frage[2] }}
+        <input type="radio" name="antwort_id" value="{{ frage[3] }}"> {{ frage[3] }}
+        <input type="radio" name="antwort_id" value="{{ frage[4] }}"> {{ frage[4] }}
+        <input type="radio" name="antwort_id" value="{{ frage[5] }}"> {{ frage[5] }}
         <input type="submit" value="Absenden">
     </form>
 </body>

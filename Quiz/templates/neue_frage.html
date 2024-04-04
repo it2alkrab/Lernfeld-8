@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Neue Frage hinzufügen</title>
+</head>
+<body>
+  <h1>Neue Frage hinzufügen</h1>
+  <form action="/neue_frage" method="post">
+    <label for="frage">Frage:</label>
+    <input type="text" name="frage" id="frage" required>
+    <br>
+    <label for="antwort1">Antwort 1:</label>
+    <input type="text" name="antwort1" id="antwort1" required>
+    <br>
+    <label for="antwort2">Antwort 2:</label>
+    <input type="text" name="antwort2" id="antwort2" required>
+    <br>
+    <label for="antwort3">Antwort 3:</label>
+    <input type="text" name="antwort3" id="antwort3" required>
+    <br>
+    <label for="antwort4">Antwort 4:</label>
+    <input type="text" name="antwort4" id="antwort4" required>
+    <br>
+    <label for="Korrekte_antwort">Korrekte Antwort:</label>
+    <input type="text" name="Korrekte_antwort" id="Korrekte_antwort" required>
+    <br>
+    <select name="kategorie_id" required>
+        <option value="">Kategorie auswählen</option>
+        {% for kategorie in kategorien %}
+<option id="kategori" value="{{ kategorie[0] }}">{{ kategorie[1] }}</option>
+{% endfor %}
+
+      </select>
+      <br>
+      <a href="/neue_kategorie">Neue Kategorie erstellen</a>
+    <br>
+    <input type="submit" value="Frage hinzufügen">
+  </form>
+</body>
+</html>

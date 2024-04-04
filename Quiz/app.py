@@ -136,37 +136,90 @@ def spielen():
 def auswertung():
     # Ausgewählte Antwort auswerten
     antwort_id = request.form.get("antwort_id")
-
+ 
     # Korrekte Antwort aus der Datenbank laden
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT korrekte_antwort FROM fragen WHERE id = %s", (antwort_id,))
     richtige_antwort = cursor.fetchone()
     cursor.close()
-
+ 
     # Ergebnis ermitteln
     richtig_falsch = "richtig" if antwort_id == richtige_antwort else "falsch"
-
+ 
     # Nächste Frage laden
     kategorie_id = request.form.get("kategorie_id")
     fragen = []
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM fragen WHERE kategorie_id = %s ORDER BY RAND() LIMIT 1", (kategorie_id,))
+    cursor.execute("""
+        SELECT * FROM fragen 
+        WHERE kategorie_id = %s 
+        ORDER BY RAND() LIMIT 1
+        """, (kategorie_id,))
     frage = cursor.fetchone()
     cursor.close()
-
+ 
     if not frage:
         # Fehlermeldung anzeigen, falls keine Fragen vorhanden
         return render_template("keine_fragen.html")
-
+ 
     # Punkte des Benutzers berechnen (optional)
     # ... Code zur Punkteberechnung ...
-
+ 
     # Ergebnis an die Vorlage übergeben
-    return render_template("ergebnis.html", 
-                          richtig_falsch=richtig_falsch, 
-                          richtige_antwort=richtige_antwort, 
-                          frage=frage, 
-                          punkte=punkte) # Punkte-Variable hinzufügen (optional)
+    return render_template("ergebnis.html",
+                          richtig_falsch=richtig_falsch,
+                          richtige_antwort=richtige_antwort,
+                          frage=frage,
+                          )
+
+@app.route("/neue_frage", methods=["GET", "POST"])
+def neue_frage():
+  if request.method == "GET":
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM kategorien")
+    kategorien = cursor.fetchall()
+    cursor.close()
+    return render_template("neue_frage.html" , kategorien=kategorien)
+  elif request.method == "POST":
+    frage = request.form.get("frage")
+    antwort1 = request.form.get("antwort1")
+    antwort2 = request.form.get("antwort2")
+    antwort3 = request.form.get("antwort3")
+    antwort4 = request.form.get("antwort4")
+    korrekte_antwort = request.form.get("korrekte_antwort")
+    kategori = request.form.get("kategori")
+
+    # Validierung der eingegebenen Daten (optional)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+      INSERT INTO fragen (frage, antwort1, antwort2, antwort3, antwort4, korrekte_antwort)
+      VALUES (%s, %s, %s, %s, %s, %s)
+    """, (frage, antwort1, antwort2, antwort3, antwort4, korrekte_antwort, kategori))
+    mysql.connection.commit()
+    cursor.close()
+
+    
+
+    # Bestätigungsmeldung oder Weiterleitung zur Fragenübersicht
+    return render_template("erfolg.html", meldung="Kategorie erfolgreich hinzugefügt")
+
+@app.route("/neue_kategorie", methods=["GET", "POST"])
+def neue_kategorie():
+  if request.method == "GET":
+    return render_template("neue_kategorie.html")
+  elif request.method == "POST":
+    name = request.form.get("name")
+
+    # Validierung des Kategoriennamens (optional)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("INSERT INTO kategorien (name) VALUES (%s)", (name,))
+    mysql.connection.commit()
+    cursor.close()
+
+    # Bestätigungsmeldung oder Weiterleitung
+    return render_template("erfolg.html", meldung="Kategorie erfolgreich hinzugefügt")
 
 
 
@@ -210,6 +263,25 @@ def bearbeiten_fragen_id(id):
         cursor.connection.commit()
         cursor.close()
         return redirect(url_for("bearbeiten_fragen"))
+
+@app.route("/rangliste")
+def rangliste():
+  cursor = mysql.connection.cursor()
+  cursor.execute("""
+    SELECT 
+      name, 
+      punkte, 
+      RANK() OVER (ORDER BY punkte DESC) AS platz
+    FROM 
+      spieler 
+    ORDER BY 
+      punkte DESC
+  """)
+  rangliste = cursor.fetchall()
+  cursor.close()
+
+  return render_template("rangliste.html", rangliste=rangliste)
+
 
 
 
