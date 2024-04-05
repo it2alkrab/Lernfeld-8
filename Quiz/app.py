@@ -282,6 +282,10 @@ def rangliste():
 
   return render_template("rangliste.html", rangliste=rangliste)
 
+@app.route('/h')
+def hilfe():
+    render_template("help.html")
+
 if __name__ == '__main__':
     app.run(debug=True)
 

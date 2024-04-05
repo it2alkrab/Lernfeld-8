@@ -22,7 +22,11 @@ class RanglisteTestCase(unittest.TestCase):
         app.mysql = self.mock_mysql
 
     def test_rangliste(self):
-        print()
-
+        response = self.app.get('/rangliste')
+        self.assertEqual(response.status_code, 200)
+        if response.status_code == 200:
+            print("\033[32mTest funktionirt\033[0m")
+        else:
+            print("funktionirt nicht")
 if __name__ == '__main__':
     unittest.main()
